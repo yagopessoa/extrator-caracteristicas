@@ -1,34 +1,113 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <!-- <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet"> -->
   <link href="modules/material.css" rel="stylesheet">
   <link href="modules/vuetify.min.css" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 </head>
 <body>
+  
   <div id="app">
     <v-app>
+      <v-toolbar dark color="primary">
+          <v-toolbar-title class="white--text">{{ title }}</v-toolbar-title>
+      </v-toolbar>
       <v-content>
-        <v-container>
-          {{ teste.name }}
-          <v-btn color="info" @click="metodo_teste()">Testar</v-btn>
+        <v-container fluid>
+          <v-flex xs12 md6 offset-md3 class="text-xs-center text-sm-center text-md-center text-lg-center">
+            <div class="headline mt-4">Selecione uma imagem para trazer as imagens mais próximas:</div>
+            <div class="body-1 mt-2 mb-4">Obs: o banco contém imagens da Torre Eiffel, Museu do Louvre, Coliseu e Parthenon</div>
+            <!-- <div style="height: 50px;"></div> -->
+            <img class="mt-4" :src="imageUrl" height="150" v-if="imageUrl"/>
+            <v-text-field class="mt-4" label="Selecionar imagem" @click='pickFile' v-model='imageName' prepend-icon='attach_file'></v-text-field>
+            <input
+              class="mt-4"
+              type="file"
+              style="display: none"
+              ref="image"
+              accept="image/*"
+              @change="onFilePicked"
+            />
+            <v-btn color="info" class="mt-4" @click="onSubmitUpload()">
+              <v-icon left>cloud_upload</v-icon>
+              Enviar
+            </v-btn>
+          </v-flex>
         </v-container>
       </v-content>
     </v-app>
   </div>
 
+  <!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.js"></script>
   <script src="modules/vue.js"></script>
   <script src="modules/vuetify.js"></script>
+
   <script>
     var data = {
-      teste: {
-        name: 'Isto é um teste!'
-      }
+      title: "Extrator de características",
+      dialog: false,
+      imageName: '',
+      imageUrl: '',
+      imageFile: ''
     }
 
     var methods = {
-      metodo_teste () {
-        console.log('testado')
+      pickFile () {
+        this.$refs.image.click ()
+      },
+      onFilePicked (e) {
+        const files = e.target.files
+        if(files[0] !== undefined) {
+          this.imageName = files[0].name
+          if(this.imageName.lastIndexOf('.') <= 0) {
+            return
+          }
+          const fr = new FileReader ()
+          fr.readAsDataURL(files[0])
+          fr.addEventListener('load', () => {
+            this.imageUrl = fr.result
+            this.imageFile = files[0] // this is an image file that can be sent to server...
+          })
+        } else {
+          this.imageName = ''
+          this.imageFile = ''
+          this.imageUrl = ''
+        }
+      },
+      onSubmitUpload () {
+        var reader = new FileReader()
+        this.imageFile && reader.readAsDataURL(this.imageFile)
+
+        reader.onload = () => {
+          // params = {
+          //   name: this.imageFile.name,
+          //   code: reader.result.split(',')[1]
+          // }
+
+          params = reader.result.split(',')[1]
+          
+          // console.log(params)
+
+          axios.post('http://127.0.0.1:5000/get-similars',
+            {
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+              body: params
+              // body: JSON.stringify(params)
+            }
+          ).then(resp => {
+            console.log(resp)
+          })
+          .catch(err =>{
+            console.log(err)
+          })
+        }
       }
     }
 
@@ -37,9 +116,13 @@
       data: data,
       methods: methods,
       mounted() {
-        console.log('montou')
+        console.log('Montou...')
       }
     })
   </script>
+
+  <style>
+  </style>
+
 </body>
 </html>
