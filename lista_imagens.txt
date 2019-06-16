@@ -1,2 +1,0 @@
-banco_imagens/cristo1.jpg
-banco_imagens/cristo2.jpg
