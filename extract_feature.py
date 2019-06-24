@@ -5,8 +5,11 @@ import numpy as np
 import sys
 import os
 import pickle
-from matplotlib import pyplot as plt
 import datetime
+import base64
+import io
+from matplotlib import pyplot as plt
+from PIL import Image
 
 N_MELHORES = 20
 TAM_DIC = 50
@@ -30,6 +33,14 @@ def ler_diretorio_imagens(root_dir):
             lista.append(full_path)
             # print(full_path)
     return lista
+
+# Faz com que imagem fique quadrada
+def make_square(im, min_size=256, fill_color=(255, 255, 255, 0)):
+    x, y = im.size
+    size = max(min_size, x, y)
+    new_im = Image.new('RGBA', (size, size), fill_color)
+    new_im.paste(im, (int((size - x) / 2), int((size - y) / 2)))
+    return new_im
 
 # Funcao que retorna os descritores da imagem de entrada
 def extrair_descritores(inp, tecnica="todos"):
@@ -233,6 +244,8 @@ def carrega_histogramas(bovw):
 
 # Funcao Main
 def main():
+    start = datetime.datetime.now()
+
     # Extrai todos os descritores e coloca-os na mesma "bag"
     bag_features = []
     lista_caracteristicas = carregar_lista_caracteristicas()
@@ -244,7 +257,7 @@ def main():
     
     bovw = criar_dic(bag_features, TAM_DIC)
 
-    imagem_base = gerar_input('banco_imagens/Colosseum/mathew-schwartz-629316-unsplash.jpg')
+    imagem_base = gerar_input('input.jpg')
     hist_entrada = gerar_histograma(bovw, imagem_base['descritores'])
 
     histogramas = carrega_histogramas(bovw)
@@ -260,11 +273,38 @@ def main():
         distancia = cv2.norm(np.float32(hist_entrada), np.float32(histogramas[i]), cv2.NORM_L2)
         resultados.append([distancia, imagens[i]])
         # print([imagens[i], distancia])
-    
+
+    response = ''
     resultados = sorted(resultados, key = lambda x:x[0])
-    print('Imagem de entrada era:', str(resultados[0][1]).split('\\')[-2])
-    for resultado in resultados[1:11]:
-        print(str(resultado[0])[0:4], '|', str(resultado[1]).split('\\')[-2])
+    for resultado in resultados:
+        if resultado[0] < 35:
+            print(str(resultado[0])[0:4], '|', str(resultado[1]).split('\\')[-2])
+
+            # real_img = Image.open(resultado[1])
+            # sqr_img = make_square(real_img)
+
+            # img_bytes = io.BytesIO()
+            # sqr_img.save(img_bytes, format="PNG")
+            # img_bytes = img_bytes.getvalue()
+
+            # encoded_string = base64.b64encode(img_bytes)
+            # response += str(encoded_string.decode("utf-8")) + ';'
+
+            # sqr_img.save(resultado[1].replace('banco_imagens', 'banco_imagens_sqr').replace('.jpg', '.png'))
+
+            # cv2.imwrite(resultado[1].replace('banco_imagens', 'banco_imagens_sqr'), )
+            # with open(resultado[1].replace('banco_imagens', 'banco_imagens_sqr'), "wb") as f:
+            #     f.save(img_bytes)
+
+            with open(resultado[1].replace('banco_imagens', 'banco_imagens_sqr').replace('.jpg', '.png'), "rb") as f:
+                encoded_string = base64.b64encode(f.read())
+                response += str(encoded_string.decode("utf-8")) + ';'
+    
+    end = datetime.datetime.now()
+    print('Tempo de processamento:', str(end-start).split('.')[0])
+
+    return response
+
 
 # # Funcao Main de testes
 # def main_testes(tecnica="todos"):
@@ -281,10 +321,10 @@ def main():
 
 
 if __name__ == "__main__":
-    start = datetime.datetime.now()
+    # start = datetime.datetime.now()
 
     # main_testes()
     main()
 
-    end = datetime.datetime.now()
-    print('Tempo de processamento:', str(end-start).split('.')[0])
+    # end = datetime.datetime.now()
+    # print('Tempo de processamento:', str(end-start).split('.')[0])

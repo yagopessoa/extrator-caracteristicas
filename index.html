@@ -1,5 +1,14 @@
 <!DOCTYPE html>
 <html>
+
+<style>
+  .carousel-div {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+</style>
+
 <head>
   <!-- <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet"> -->
@@ -30,11 +39,27 @@
               accept="image/*"
               @change="onFilePicked"
             />
-            <v-btn color="info" class="mt-4" @click="onSubmitUpload()">
+            <v-btn color="info" class="mt-4" @click="onSubmitUpload()" v-if="!isLoading" :disabled="isLoading">
               <v-icon left>cloud_upload</v-icon>
               Enviar
             </v-btn>
+            <v-progress-circular
+              class="mt-4"
+              indeterminate
+              color="info"
+              v-else
+            ></v-progress-circular>
           </v-flex>
+          <div class="carousel-div">
+            <div style="width: 300px;">
+              <v-carousel v-if="(images.length > 0) && !isLoading" class="mt-4">
+                <v-carousel-item
+                  v-for="(image,i) in images"
+                  :key="i"
+                  :src="image"
+                ></v-carousel-item>
+              </v-carousel>
+          </div>
         </v-container>
       </v-content>
     </v-app>
@@ -49,10 +74,12 @@
   <script>
     var data = {
       title: "Extrator de características",
+      isLoading: false,
       dialog: false,
       imageName: '',
       imageUrl: '',
-      imageFile: ''
+      imageFile: '',
+      images: []
     }
 
     var methods = {
@@ -83,14 +110,8 @@
         this.imageFile && reader.readAsDataURL(this.imageFile)
 
         reader.onload = () => {
-          // params = {
-          //   name: this.imageFile.name,
-          //   code: reader.result.split(',')[1]
-          // }
-
           params = reader.result.split(',')[1]
-          
-          // console.log(params)
+          this.isLoading = true;
 
           axios.post('http://127.0.0.1:5000/get-similars',
             {
@@ -102,10 +123,17 @@
               // body: JSON.stringify(params)
             }
           ).then(resp => {
-            console.log(resp)
+            //console.log(resp)
+            this.images = []
+            var list = resp.data.split(';')
+            for (var i=0; i<list.length-1; i++) {
+              this.images.push('data:image/jpeg;base64,' + list[i])
+            }
+            this.isLoading = false;
           })
           .catch(err =>{
             console.log(err)
+            this.isLoading = false;
           })
         }
       }
@@ -120,9 +148,6 @@
       }
     })
   </script>
-
-  <style>
-  </style>
 
 </body>
 </html>
