@@ -280,23 +280,6 @@ def main():
         if resultado[0] < 50:
             print(str(resultado[0])[0:4], '|', str(resultado[1]).split('\\')[-2])
 
-            # real_img = Image.open(resultado[1])
-            # sqr_img = make_square(real_img)
-
-            # img_bytes = io.BytesIO()
-            # sqr_img.save(img_bytes, format="PNG")
-            # img_bytes = img_bytes.getvalue()
-
-            # encoded_string = base64.b64encode(img_bytes)
-            # response += str(encoded_string.decode("utf-8")) + ';'
-
-            # sqr_img.save(resultado[1].replace('banco_imagens', 'banco_imagens_sqr').replace('.jpg', '.png'))
-
-            # cv2.imwrite(resultado[1].replace('banco_imagens', 'banco_imagens_sqr'), )
-            # with open(resultado[1].replace('banco_imagens', 'banco_imagens_sqr'), "wb") as f:
-            #     f.save(img_bytes)
-
-            # with open(resultado[1].replace('banco_imagens', 'banco_imagens_sqr').replace('.jpg', '.png'), "rb") as f:
             with open(resultado[1], "rb") as f:
                 encoded_string = base64.b64encode(f.read())
                 response += str(encoded_string.decode("utf-8")) + ';'
@@ -307,25 +290,5 @@ def main():
     return response
 
 
-# # Funcao Main de testes
-# def main_testes(tecnica="todos"):
-#     lista_caracteristicas = carregar_lista_caracteristicas()
-#     imagem_base = gerar_input('banco_imagens/Colosseum/mathew-schwartz-629316-unsplash.jpg')
-
-#     similares = compara_caracteristicas(
-#         imagem_base, lista_caracteristicas, 100)
-    
-#     similares = sorted(similares, key = lambda x:x['score'])
-#     for similar in similares[0:10]:
-#         print('[' + str(similar['score'])[0:4] + '] ' + similar['nome'] +
-#             ' | ' + similar['path'].split('\\')[-1])
-
-
 if __name__ == "__main__":
-    # start = datetime.datetime.now()
-
-    # main_testes()
     main()
-
-    # end = datetime.datetime.now()
-    # print('Tempo de processamento:', str(end-start).split('.')[0])
