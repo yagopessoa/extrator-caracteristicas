@@ -262,10 +262,10 @@ def main():
 
     histogramas = carrega_histogramas(bovw)
 
-    imagens = ler_diretorio_imagens("banco_imagens/Colosseum")
-    imagens += ler_diretorio_imagens("banco_imagens/Eiffel")
-    imagens += ler_diretorio_imagens("banco_imagens/Louvre")
-    imagens += ler_diretorio_imagens("banco_imagens/Parthenon")
+    imagens = ler_diretorio_imagens("banco_imagens_sqr/Colosseum")
+    imagens += ler_diretorio_imagens("banco_imagens_sqr/Eiffel")
+    imagens += ler_diretorio_imagens("banco_imagens_sqr/Louvre")
+    imagens += ler_diretorio_imagens("banco_imagens_sqr/Parthenon")
 
     # Calcula as distâncias do histograma da imagem de entrada com as da lista de imagens...
     resultados = []
@@ -296,7 +296,8 @@ def main():
             # with open(resultado[1].replace('banco_imagens', 'banco_imagens_sqr'), "wb") as f:
             #     f.save(img_bytes)
 
-            with open(resultado[1].replace('banco_imagens', 'banco_imagens_sqr').replace('.jpg', '.png'), "rb") as f:
+            # with open(resultado[1].replace('banco_imagens', 'banco_imagens_sqr').replace('.jpg', '.png'), "rb") as f:
+            with open(resultado[1], "rb") as f:
                 encoded_string = base64.b64encode(f.read())
                 response += str(encoded_string.decode("utf-8")) + ';'
     
