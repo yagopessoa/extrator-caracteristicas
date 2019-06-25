@@ -277,7 +277,7 @@ def main():
     response = ''
     resultados = sorted(resultados, key = lambda x:x[0])
     for resultado in resultados:
-        if resultado[0] < 35:
+        if resultado[0] < 50:
             print(str(resultado[0])[0:4], '|', str(resultado[1]).split('\\')[-2])
 
             # real_img = Image.open(resultado[1])
