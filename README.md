@@ -1,12 +1,20 @@
 # extrator-caracteristicas
 
-Projeto de extrator de características de imagens no contexto da Disciplina SCC0561 - Multimídia do ICMC - USP de São Carlos, feito por Yago Pessoa e Erik van Eijk.
+Projeto de extrator de características de imagens no contexto da Disciplina SCC0561 - Multimídia do ICMC - USP de São Carlos, feito por:
+
+- Yago Pessoa, 9896218
+
+- Erik van Eijk, 8066551
+
+Na construção da solução foram utilizados Python (OpenCV e Flask) e Vue.js na interface.
 
 ## Requerimentos
 
 [Python 3.5](https://www.python.org/downloads/release/python-350/)
 
-## Como rodar o projeto (Windows)
+## Instalação (Windows)
+
+Clone ou baixe o repositório na sua máquina, navegue até a pasta raiz do projeto e abra um terminal.
 
 ### Instale o virtualenv
 
@@ -25,6 +33,12 @@ Projeto de extrator de características de imagens no contexto da Disciplina SCC
 ### Instale as dependencias 
 
 `pip install -r requirements.txt`
+
+## Como rodar o projeto
+
+### Entre na env criada
+
+`workon feat-ext`
 
 ### Rode a API
 
